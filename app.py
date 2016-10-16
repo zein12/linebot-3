@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from flask import Flask
-from flask import request
-
 import os
 import hmac
 import hashlib
@@ -11,9 +7,21 @@ import base64
 import json
 import requests
 
+from flask import Flask
+from flask import request
+
+import redis
+from rq import Queue
+from worker import conn
+
 app = Flask(__name__)
 channelSecret = os.environ['LINE_CHANNEL_SECRET']
 channelAccessToken = os.environ['LINE_CHANNEL_ACCESS_TOKEN']
+
+redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
+
+conn = redis.from_url(redis_url)
+workerQueue = Queue('default', connection=conn)
 
 def verifySignature(signature, requestBody):
     digest = hmac.new(channelSecret, requestBody, hashlib.sha256).digest()
@@ -48,7 +56,7 @@ def webhook():
         replyToken = event['replyToken']
         if event['type'] == 'message':
             text = event['message']['text']
-            replyMessage(replyToken, text)
+            workerQueue.enqueue_call(func=replyMessage, args=(replyToken, text), timeout=30)
     return json.dumps('')
 
 if __name__ == "__main__":
