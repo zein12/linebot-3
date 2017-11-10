@@ -15,8 +15,8 @@ from rq import Queue
 from worker import conn
 
 app = Flask(__name__)
-channelSecret = os.environ['LINE_CHANNEL_SECRET']
-channelAccessToken = os.environ['LINE_CHANNEL_ACCESS_TOKEN']
+channelSecret = os.environ['d0aa00b32ee8cb491e52dd801b86e041']
+channelAccessToken = os.environ['xz/JtdLRqBocv4PpYboi0a0RnXv3vpurJW9ElUuaHPpT8DFAflJK1Fpwc4cy0Unl94BXTdCmVaWYB9g8v8G8hNeci/Kr45J3a9m7kHsbeXYGbmiDQltRp5dsLJj7aNr34uhp/iWf+B+fI4SUvFcd+AdB04t89/1O/w1cDnyilFU=']
 
 redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 
